@@ -35,10 +35,9 @@ $(() => {
 
     $("#login").click(() =>
     {
-        //TODO find a better way to challenge
         //timestamp is in future and must be above current time
         let challenge = parseInt(new Date.now()) + 1000;
-        signChallengeResponse(challenge);
+        signChallengeResponse(challenge + serviceId);
     });
 
     //sign a random message with timestamp
