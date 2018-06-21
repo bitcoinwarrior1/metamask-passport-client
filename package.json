@@ -1,0 +1,23 @@
+{
+  "name": "metamask-passport",
+  "version": "1.0.0",
+  "description": "A service to let you prove ownership of a token and pass in",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js > bundle.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "ethereumjs-util": "^5.2.0",
+    "jade": "~1.11.0",
+    "knex": "^0.12.9",
+    "pg": "^6.1.5",
+    "sqlite3": "^3.1.8",
+    "superagent": "^3.5.2",
+    "web3": "^0.18.4"
+  },
+  "author": "James Sangalli",
+  "license": "GPL-2.0"
+}
