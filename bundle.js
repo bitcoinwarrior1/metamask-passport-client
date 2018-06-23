@@ -10,7 +10,7 @@
 let web3 = require("web3");
 let request = require("superagent");
 let serviceId = "AWTT"; //service provider to fill this
-
+let account;
 $(() => {
 
     initWeb3();
@@ -22,22 +22,20 @@ $(() => {
         {
             const injectedProvider = window.web3.currentProvider;
             web3 = new Web3(injectedProvider);
+            account = web3.eth.coinbase;
         }
         else
         {
-            web3 = new web3("http://localhost:8545/");
-            alert(
-                "no injected provider found, using localhost:8545," +
-                " please ensure your local node is running " +
-                "with rpc and rpccorsdomain enabled or download metamask"
-            );
+            //redirect to download metamask
+            window.location.href = "https://chrome.google.com/webstore/detail" +
+                "/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en";
         }
     }
 
     $("#login").click(() =>
     {
         //timestamp is in future and must be above current time
-        let challenge = parseInt(new Date.now()) + 1000;
+        let challenge = Math.floor(Date.now() / 1000) + 1000;
         signChallengeResponse(challenge + serviceId);
     });
 
@@ -47,19 +45,19 @@ $(() => {
     //lookups for balance can be done with assurance
     function signChallengeResponse(challengeMessage)
     {
-        let account = web3.eth.coinbase;
         let messageHashed = web3.sha3(challengeMessage);
-        let signature = web3.eth.sign(messageHashed, account);
-        request.post("https://blockchainapis.herokuapp.com/passport/" + serviceId + "/"
-            + challengeMessage + "/" + signature, (err, data) =>
-        {
-           if(err)
-           {
-               alert(err);
-               return;
-           }
-           //handle redirect to service
-            window.location.href = data.body.callback;
+        web3.eth.sign(account, messageHashed, (err, data) => {
+            request.post("https://blockchainapis.herokuapp.com/passport/" + serviceId + "/"
+                + challengeMessage + "/" + data, (err, data) =>
+            {
+                if(err)
+                {
+                    alert(err);
+                    return;
+                }
+                //handle redirect to service
+                window.location.href = data.body.callback;
+            });
         });
     }
 
