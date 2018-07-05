@@ -19,24 +19,21 @@ let type; //assigned by service
 
 $(() => {
 
-    initWeb3();
 
-    function initWeb3()
+    //check if plugin node is available if not use localhost
+    if (typeof window.web3 !== 'undefined')
     {
-        //check if plugin node is available if not use localhost
-        if (typeof window.web3 !== 'undefined')
-        {
-            const injectedProvider = window.web3.currentProvider;
-            web3 = new Web3(injectedProvider);
-            account = web3.eth.coinbase;
-        }
-        // else
-        // {
-        //     //redirect to download metamask
-        //     window.location.href = "https://chrome.google.com/webstore/detail" +
-        //         "/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en";
-        // }
+        const injectedProvider = window.web3.currentProvider;
+        web3 = new Web3(injectedProvider);
+        account = web3.eth.coinbase;
     }
+    else
+    {
+        //redirect to download metamask
+        window.location.href = "https://chrome.google.com/webstore/detail" +
+            "/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en";
+    }
+
 
     $("#login").click(() =>
     {
