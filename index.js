@@ -50,22 +50,22 @@ $(() => {
         let messageHashed = web3.sha3(challengeMessage);
         let abi = getAbiEncoding(type);
         let contract = web3.eth.contract(abi).at(contractAddress);
-        let balance = contract.balanceOf.call(account);
-        if(balance == 0)
-        {
-            alert("you do not hold a valid token to enter, please try again");
-            return;
-        }
-        web3.eth.sign(account, messageHashed, (err, signature) => {
-            //check has balance
-            request.post(serverUrl + challengeMessage + "/" + signature, (err, data) => {
-                if (err) {
-                    alert(err);
-                    return;
-                }
-                //handle redirect to service
-                if(data == false) alert("you must have ether to claim this gift");
-                else window.location.href = data;
+        contract.balanceOf.call(account, (err, bal) => {
+            if(bal == 0)
+            {
+                alert("you do not hold a valid token to enter, please try again");
+                return;
+            }
+            web3.eth.sign(account, messageHashed, (err, signature) => {
+                //check has balance
+                request.post(serverUrl + messageHashed + "/" + signature, (err, data) => {
+                    if (err) {
+                        alert(err);
+                        return;
+                    }
+                    //handle redirect to service
+                    window.location.href = data.body.callback;
+                });
             });
         });
     }
