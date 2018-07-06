@@ -19,5 +19,5 @@
     "web3": "^0.18.4"
   },
   "author": "James Sangalli",
-  "license": "GPL-2.0"
+  "license": "MIT"
 }
