@@ -57,7 +57,6 @@ $(() => {
                 return;
             }
             web3.eth.sign(account, messageHashed, (err, signature) => {
-                //check has balance
                 request.post(serverUrl + messageHashed + "/" + signature, (err, data) => {
                     if (err) {
                         alert(err);
