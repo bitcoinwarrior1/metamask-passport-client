@@ -58,7 +58,7 @@ $(() => {
                 alert("you do not hold a valid token to enter, please try again");
                 return;
             }
-            web3.personal.sign(account, messageHashed, (err, signature) => {
+            web3.eth.sign(account, messageHashed, (err, signature) => {
                 request.post(serverUrl + messageHashed + "/" + signature, (err, callback) => {
                     if (err) {
                         alert(err);
