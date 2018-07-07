@@ -5,12 +5,13 @@
 * ownership of a token to gain privileged access to services online.
 * This is the client side application which contains a button to login and requires a backend server to store and log sessions
 *
+* There is an example filled out there by the service provider is to fill their own and handle a callback url with their server
 */
 
 let web3 = require("web3");
 let request = require("superagent");
 let contractAddress = "0x22a7d3c296692ba0f91c631b41bdfbc702885619"; //the contract address you want to check the user has balance against
-let account;
+let account; //will default to coinbase account
 let serverUrl = "https://blockchainapis.herokuapp.com/passport/exampleAuthentication/"; //filled in by service, handles successful callbacks
 let erc20Abi = JSON.parse('[{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"who","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"},{"name":"extraData","type":"bytes"}],"name":"approveAndCall","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}]');
 let erc875Abi = JSON.parse('[{ "constant": true, "inputs": [], "name": "name", "outputs": [ { "name": "name", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_to", "type": "address" }, { "name": "_tokens", "type": "uint256[]" } ], "name": "transfer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_owner", "type": "address" } ], "name": "balanceOf", "outputs": [ { "name": "_balances", "type": "uint256[]" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "expiryTimeStamp", "type": "uint256" }, { "name": "tokenIndices", "type": "uint256[]" }, { "name": "v", "type": "uint8" }, { "name": "r", "type": "bytes32" }, { "name": "s", "type": "bytes32" } ], "name": "trade", "outputs": [], "payable": true, "stateMutability": "payable", "type": "function" }, { "constant": true, "inputs": [], "name": "symbol", "outputs": [ { "name": "symbol", "type": "string" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [ { "name": "_from", "type": "address" }, { "name": "_to", "type": "address" }, { "name": "_tokens", "type": "uint256[]" } ], "name": "transferFrom", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "anonymous": false, "inputs": [ { "indexed": true, "name": "_from", "type": "address" }, { "indexed": true, "name": "_to", "type": "address" }, { "indexed": false, "name": "tokenIndices", "type": "uint256[]" } ], "name": "Transfer", "type": "event" }]');
@@ -29,6 +30,7 @@ $(() => {
     }
     else
     {
+        alert("no metamask installed, redirecting you now...")
         //redirect to download metamask
         window.location.href = "https://chrome.google.com/webstore/detail" +
             "/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en";
@@ -57,14 +59,14 @@ $(() => {
                 alert("you do not hold a valid token to enter, please try again");
                 return;
             }
-            web3.eth.sign(account, messageHashed, (err, signature) => {
-                request.post(serverUrl + messageHashed + "/" + signature, (err, data) => {
+            web3.personal.sign(account, messageHashed, (err, signature) => {
+                request.post(serverUrl + messageHashed + "/" + signature, (err, callback) => {
                     if (err) {
                         alert(err);
                         return;
                     }
                     //handle redirect to service
-                    window.location.href = data.body.callback;
+                    window.location.href = callback;
                 });
             });
         });
