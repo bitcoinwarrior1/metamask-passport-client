@@ -4,7 +4,7 @@ A service to verify your token holdings to gain access. The ethereum version of 
 ## Test run the service below (must have CanyaCoins):
 https://james-sangalli.github.io/metamask-passport-client/
 
-## Use for your token service
+## How to use this for your own token service
 
 To use this passport you need to do the following: 
 
